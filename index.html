@@ -2,10 +2,13 @@
 <html>
 <head>
   <meta charset="utf-8" />
-  <title>Mapa Interativo</title>
+  <title>Mapa Interativo - MapTiler</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="https://api.mapbox.com/mapbox-gl-js/v3.2.0/mapbox-gl.js"></script>
-  <link href="https://api.mapbox.com/mapbox-gl-js/v3.2.0/mapbox-gl.css" rel="stylesheet" />
+  
+  <!-- MapLibre GL JS (usado pelo MapTiler) -->
+  <script src="https://unpkg.com/maplibre-gl@3.6.1/dist/maplibre-gl.js"></script>
+  <link href="https://unpkg.com/maplibre-gl@3.6.1/dist/maplibre-gl.css" rel="stylesheet" />
+  
   <style>
     body { margin: 0; padding: 0; }
     #map { position: absolute; top: 0; bottom: 0; width: 100%; }
@@ -40,26 +43,27 @@
   </div>
 
   <script>
-    mapboxgl.accessToken = 'e8BaqrE45o6z9Xmtkmrt';
+    // 🔑 Sua chave do MapTiler
+    const key = 'e8BaqrE45o6z9Xmtkmrt';
 
-    // Posição inicial (exemplo: São Paulo)
+    // 🗺️ Posição inicial (São Paulo)
     const posicaoInicial = [-46.6333, -23.5505];
 
-    // Criar mapa
-    const map = new mapboxgl.Map({
+    // Cria o mapa usando MapLibre (MapTiler)
+    const map = new maplibregl.Map({
       container: 'map',
-      style: 'mapbox://styles/mapbox/streets-v12',
+      style: `https://api.maptiler.com/maps/streets/style.json?key=${key}`,
       center: posicaoInicial,
       zoom: 12
     });
 
-    // Adicionar controles de navegação (zoom e rotação)
-    map.addControl(new mapboxgl.NavigationControl());
+    // Adiciona controles de navegação
+    map.addControl(new maplibregl.NavigationControl());
 
-    // Marcador fixo na posição inicial
-    const marcador = new mapboxgl.Marker({ color: 'red' })
+    // Marcador fixo no ponto inicial
+    const marcador = new maplibregl.Marker({ color: 'red' })
       .setLngLat(posicaoInicial)
-      .setPopup(new mapboxgl.Popup().setText('Ponto inicial'))
+      .setPopup(new maplibregl.Popup().setText('Ponto inicial'))
       .addTo(map);
 
     // Botão: mostrar localização atual
@@ -69,9 +73,9 @@
           const lng = pos.coords.longitude;
           const lat = pos.coords.latitude;
           map.flyTo({ center: [lng, lat], zoom: 14 });
-          new mapboxgl.Marker({ color: 'blue' })
+          new maplibregl.Marker({ color: 'blue' })
             .setLngLat([lng, lat])
-            .setPopup(new mapboxgl.Popup().setText('Você está aqui!'))
+            .setPopup(new maplibregl.Popup().setText('Você está aqui!'))
             .addTo(map);
         }, () => {
           alert('Não foi possível obter sua localização.');
