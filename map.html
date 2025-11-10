@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mapa Interativo</title>
+
+    <!-- Estilos e scripts do Maptiler -->
+    <link href="https://cdn.maptiler.com/maplibre-gl-js/v3.3.1/maplibre-gl.css" rel="stylesheet" />
+    <script src="https://cdn.maptiler.com/maplibre-gl-js/v3.3.1/maplibre-gl.js"></script>
+
+    <style>
+      html, body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        width: 100%;
+        overflow: hidden;
+        font-family: sans-serif;
+      }
+      #map {
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%;
+        height: 100%;
+      }
+
+      /* Marcador fixo no centro */
+      .marker-center {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 24px;
+        height: 24px;
+        background-color: #ff3333;
+        border-radius: 50%;
+        border: 2px solid white;
+        transform: translate(-50%, -50%);
+        box-shadow: 0 0 6px rgba(0,0,0,0.3);
+        pointer-events: none;
+      }
+
+      /* Botão para pegar coordenadas */
+      .coords-btn {
+        position: absolute;
+        bottom: 16px;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 10px 16px;
+        background-color: #111;
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 14px;
+      }
+      .coords-btn:hover {
+        background-color: #333;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="map"></div>
+    <div class="marker-center"></div>
+    <button class="coords-btn" id="getCoordsBtn">Obter Coordenadas</button>
+
+    <script>
+      // Inicializa o mapa
+      const map = new maplibregl.Map({
+        container: 'map',
+        style: 'https://api.maptiler.com/maps/streets/style.json?key=e8BaqrE45o6z9Xmtkmrt',
+        center: [-46.6333, -23.5505], // São Paulo
+        zoom: 12
+      });
+
+      // Adiciona controles de zoom e rotação
+      map.addControl(new maplibregl.NavigationControl(), 'top-right');
+
+      // Botão para pegar coordenadas do centro do mapa
+      document.getElementById("getCoordsBtn").addEventListener("click", () => {
+        const center = map.getCenter();
+        alert(`Latitude: ${center.lat.toFixed(6)}\nLongitude: ${center.lng.toFixed(6)}`);
+      });
+    </script>
+  </body>
+</html>
