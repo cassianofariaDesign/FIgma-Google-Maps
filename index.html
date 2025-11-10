@@ -1,87 +1,90 @@
 <!DOCTYPE html>
-<html lang="pt-br">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Mapa Interativo</title>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Mapa Interativo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://api.mapbox.com/mapbox-gl-js/v3.2.0/mapbox-gl.js"></script>
+  <link href="https://api.mapbox.com/mapbox-gl-js/v3.2.0/mapbox-gl.css" rel="stylesheet" />
+  <style>
+    body { margin: 0; padding: 0; }
+    #map { position: absolute; top: 0; bottom: 0; width: 100%; }
+    .info {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: white;
+      padding: 10px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      font-family: sans-serif;
+    }
+    button {
+      margin-top: 5px;
+      width: 100%;
+      padding: 5px;
+      border: none;
+      background: #007bff;
+      color: white;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  <div class="info">
+    <h3>Mapa Interativo</h3>
+    <button id="btn-localizacao">Minha localização</button>
+    <button id="btn-reset">Centralizar mapa</button>
+  </div>
 
-    <!-- Estilos e scripts do Maptiler -->
-    <link href="https://cdn.maptiler.com/maplibre-gl-js/v3.3.1/maplibre-gl.css" rel="stylesheet" />
-    <script src="https://cdn.maptiler.com/maplibre-gl-js/v3.3.1/maplibre-gl.js"></script>
+  <script>
+    mapboxgl.accessToken = 'e8BaqrE45o6z9Xmtkmrt';
 
-    <style>
-      html, body {
-        margin: 0;
-        padding: 0;
-        height: 100%;
-        width: 100%;
-        overflow: hidden;
-        font-family: sans-serif;
+    // Posição inicial (exemplo: São Paulo)
+    const posicaoInicial = [-46.6333, -23.5505];
+
+    // Criar mapa
+    const map = new mapboxgl.Map({
+      container: 'map',
+      style: 'mapbox://styles/mapbox/streets-v12',
+      center: posicaoInicial,
+      zoom: 12
+    });
+
+    // Adicionar controles de navegação (zoom e rotação)
+    map.addControl(new mapboxgl.NavigationControl());
+
+    // Marcador fixo na posição inicial
+    const marcador = new mapboxgl.Marker({ color: 'red' })
+      .setLngLat(posicaoInicial)
+      .setPopup(new mapboxgl.Popup().setText('Ponto inicial'))
+      .addTo(map);
+
+    // Botão: mostrar localização atual
+    document.getElementById('btn-localizacao').addEventListener('click', () => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(pos => {
+          const lng = pos.coords.longitude;
+          const lat = pos.coords.latitude;
+          map.flyTo({ center: [lng, lat], zoom: 14 });
+          new mapboxgl.Marker({ color: 'blue' })
+            .setLngLat([lng, lat])
+            .setPopup(new mapboxgl.Popup().setText('Você está aqui!'))
+            .addTo(map);
+        }, () => {
+          alert('Não foi possível obter sua localização.');
+        });
+      } else {
+        alert('Geolocalização não suportada pelo seu navegador.');
       }
-      #map {
-        position: absolute;
-        top: 0; left: 0;
-        width: 100%;
-        height: 100%;
-      }
+    });
 
-      /* Marcador fixo no centro */
-      .marker-center {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 24px;
-        height: 24px;
-        background-color: #ff3333;
-        border-radius: 50%;
-        border: 2px solid white;
-        transform: translate(-50%, -50%);
-        box-shadow: 0 0 6px rgba(0,0,0,0.3);
-        pointer-events: none;
-      }
-
-      /* Botão para pegar coordenadas */
-      .coords-btn {
-        position: absolute;
-        bottom: 16px;
-        left: 50%;
-        transform: translateX(-50%);
-        padding: 10px 16px;
-        background-color: #111;
-        color: #fff;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        font-size: 14px;
-      }
-      .coords-btn:hover {
-        background-color: #333;
-      }
-    </style>
-  </head>
-
-  <body>
-    <div id="map"></div>
-    <div class="marker-center"></div>
-    <button class="coords-btn" id="getCoordsBtn">Obter Coordenadas</button>
-
-    <script>
-      // Inicializa o mapa
-      const map = new maplibregl.Map({
-        container: 'map',
-        style: 'https://api.maptiler.com/maps/streets/style.json?key=e8BaqrE45o6z9Xmtkmrt',
-        center: [-46.6333, -23.5505], // São Paulo
-        zoom: 12
-      });
-
-      // Adiciona controles de zoom e rotação
-      map.addControl(new maplibregl.NavigationControl(), 'top-right');
-
-      // Botão para pegar coordenadas do centro do mapa
-      document.getElementById("getCoordsBtn").addEventListener("click", () => {
-        const center = map.getCenter();
-        alert(`Latitude: ${center.lat.toFixed(6)}\nLongitude: ${center.lng.toFixed(6)}`);
-      });
-    </script>
-  </body>
+    // Botão: resetar para posição inicial
+    document.getElementById('btn-reset').addEventListener('click', () => {
+      map.flyTo({ center: posicaoInicial, zoom: 12 });
+    });
+  </script>
+</body>
 </html>
