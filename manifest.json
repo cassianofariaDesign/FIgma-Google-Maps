@@ -3,5 +3,5 @@
   "id": "map-plugin",
   "api": "1.0.0",
   "main": "code.js",
-  "ui": "map.html"
+  "ui": "index.html"
 }
